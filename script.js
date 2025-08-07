@@ -1,14 +1,28 @@
 /* VARIABLES */
-let startButton, instButton, doorway1;
-let player, barriers;
-let enteredDoorway1 = false, enteredDoorway2 = false;
-let bedroomImg;
+let startButton, instButton, doorway1, doorway2;
+let player, barriers, borders, border1, border2, border3;
+let bedroomImg, livingRoomImg, storageImg, idle;
+let tulip, daisy, orchid, sunflower, pansy;
+let tulipImg, daisyImg, orchidImg, sunflowerImg, pansyImg;
 let screen = 0, fadeIn = 0;
 
 /* PRELOAD LOADS FILES */
 function preload(){
+  
   //Load images
   bedroomImg = loadImage("/assets/bedroom.png");
+  livingRoomImg = loadImage("/assets/livingRoom.png");
+  storageImg = loadImage("/assets/storage.png");
+
+  tulipImg = loadImage("/assets/tulip.png");
+  daisyImg = loadImage("/assets/daisy.png");
+  orchidImg = loadImage("/assets/orchid.png");
+  sunflowerImg = loadImage("/assets/sunflower.png");
+  pansyImg = loadImage("/assets/pansy.png");
+
+  //Player animations
+  //player.addAni("idle","/asstes/idle.png", {width: 16, height: 18, frames: 2} );
+  //player.addAni("run","/asstes/run.png", {width: 16, height: 18, frames: 2} );
   
 }
 
@@ -27,7 +41,11 @@ function setup() {
   startButton = new Sprite( width / 2 , height/2 + 100 , 100 , 30 , "k" );
   instButton = new Sprite ( -100, -100 , 100, 30, "k" );
   doorway1 = new Sprite( -150, -150 , 6, 60, "k");
-  player = new Sprite ( -400 , - 400 , 10, 10, "k");
+  doorway2 = new Sprite( -150, -150, 60, 6, "k");
+  player = new Sprite ( -400 , - 400 , 20, 20);
+
+  tulip = new Sprite( -200, -200, 20, 40, "k");
+
 
   //Create barrier sprites...
   barriers = new Group();
@@ -39,10 +57,48 @@ function setup() {
   new barriers.Sprite ( 200, 62, 282, 6 );
   new barriers.Sprite ( 200, 338, 282, 6 );
 
+  //Border sprites. super painful.
+  //Bedroom
+  borders = new Group();
+  borders.collider = "s";
+  borders.opacity = 0;
+
+  border1 = new border1.Group();
+  border.w = 10;
+
+  //Characteristics for Sprites
+  player.color = 0;
+  player.rotationLock = true;
+  player.visible = false;
+
+  doorway1.color = "#140505";
+  doorway2.color = "#140505";
+
+  barriers.visible = false;
+
 }
 
 /* DRAW LOOP REPEATS */
 function draw() {
+
+  //Player movement
+  if (kb.pressing("left")) {
+    player.vel.x = -2;
+
+  } else if (kb.pressing("right")) {
+    player.vel.x = 2;
+
+  } else if (kb.pressing("up")) {
+    player.vel.y = -2;
+
+  } else if (kb.pressing("down")) {
+    player.vel.y = 2;
+
+  } else {
+    player.vel.x = 0;
+    player.vel.y = 0;
+
+  }
 
   //Display start button
   startButton.color = "white";
@@ -58,32 +114,40 @@ function draw() {
 
   //The display depends on the screen!
   if (screen == 1){
+    player.pos = {x: width/2, y: height/2};
     print("Display instructions");
     showInst();
     
   } else if (screen == 2){
     print("Display bedroom");
     bedroom();
+    if ( player.collides(doorway1) ){
+      screen = 3;
+      player.pos = {x: width/2 + 110, y: height/2 - 15};
+    }
     
   } else if (screen == 3){
     print("Display living room");
     livingRoom();
+
+    if (player.collides(doorway1) ){
+      screen = 2;
+      player.pos = {x: 90, y: 230};
+    } else if (player.collides(doorway2) ){
+      screen = 4;
+      player.pos = {x: 150,y: 295};
+    }
     
   } else if (screen == 4){
     print("Display storage room");
     storeRoom();
+
+    if ( player.collides(doorway2) ){
+      screen = 3;
+      player.pos = {x: 150, y: 295};
+    }
   }
 
-  //Player movement...
-  if (kb.pressing("left") ){
-    player.vel.x = -2;
-  } else if (kb.pressing("right") ){
-    player.vel.x = 2;
-  } else if (kb.pressing("up") ){
-    player.vel.y = -2;
-  } else if (kb.pressing("down") ){
-    player.vel.y = 2;
-  } 
 
 }
 
@@ -92,7 +156,6 @@ function draw() {
 /* FUNCTIONS */
 
 function showInst(){ 
-
   //Move start button off screen 
   startButton.pos = {x: -100, y: -100};
 
@@ -114,13 +177,17 @@ function showInst(){
   instButton.textSize = 20;
   instButton.text = "continue";
 
+  //Move onto bedroom
   if (instButton.mouse.presses() ){
     screen = 2;
+    player.visible = true;
+    barriers.visible = true;
   }
 }
 
-function bedroom() {
 
+
+function bedroom() {
   //Move instButton off of screen
   instButton.pos = { x: -100 , y: -100 };
 
@@ -130,43 +197,33 @@ function bedroom() {
 
   //Doorway
   doorway1.pos = { x: 67 , y: 230 };
-  doorway1.color = "#140505";
+  doorway2.pos = {x: -150, y: -150};
+
+  //Tulip
+  tulip.pos = {x:80, y: 170 };
+  
   
 }
 
+
+
 function livingRoom() {
-  background("grey");
+  //Remove prev flowers hitbox
+  tulip.pos = {x: -300, y: -300};
+  
+  //Display living room
+  image(livingRoomImg, 64, 64);
+
+  //Add doorways
+  doorway1.pos = {x: 332, y: height/2 - 15};
+  doorway2.pos = {x: 150, y: 332};
+  
 }
 
 function storeRoom() {
-  background("red");
-}
+  //Display storage room
+  image(storageImg, 64, 64);
 
-function barrierSetup() {
-
-  if (screen < 2){
-    barriers.pos = {x: -400, y: -400};
-  }
-
-  new barriers.Sprite( 64, 64, 336, 5);
-  
-}
-
-function playerEnter() {
-
-  if ( (enteredDoorway1 == true) {
-    if (screen == 2){
-      //if leaving bedroom to living room, this will happen
-    } else if (screen == 3){
-      //if going from living room to bedroom
-    }
-  } else if ( enteredDoorway 2 == true ){
-    if (screen == 3){
-      //if going from living room to storage
-    } else if (screen == 4){
-      //if going from storage to living room
-    }
-  } else {
-    player.pos = { x: width / 2, y: height/2 }; //basically only will be used in beginning of game
-  }
+  //Add doorways
+  doorway1.pos = {x: -150, y: -150};
 }
