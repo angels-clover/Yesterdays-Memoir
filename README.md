@@ -21,7 +21,8 @@ You can extend your project further by:
 
 ###  Attributions
 *If you used any code, ideas, images, or resources from another person or group of people, tell us about it here. Make sure it is in the public domain, has a license that allows you to use it, or is one of your own.
-- Add here if applicable
+- Top-down Retro Interior by Penzilla https://penzilla.itch.io/top-down-retro-interior
+- Mini Interior Asset Pack Bed + Bath Exports by H0ndred https://h0ndred.itch.io/mini-interior-asset-pack-bedroom-bathroom
 
 ---
 
